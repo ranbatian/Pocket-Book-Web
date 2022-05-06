@@ -1,20 +1,28 @@
 // App.jsx
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import About from "./page/About";
-import Index from "./page/Index";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import { ConfigProvider } from "zarm";
 import zhCN from "zarm/lib/config-provider/locale/zh_CN";
 import "zarm/dist/zarm.css";
+import NavBar from "./components/Nav";
+import router from "./router";
+
 function App() {
   return (
     <BrowserRouter>
       <ConfigProvider primaryColor={"#007fff"} locale={zhCN}>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/about" element={<About />} />
+          {router.map((route) => (
+            <Route
+              exact
+              key={route.path}
+              path={route.path}
+              element={<route.component />}
+            />
+          ))}
         </Routes>
       </ConfigProvider>
+      {/* <NavBar /> */}
     </BrowserRouter>
   );
 }
