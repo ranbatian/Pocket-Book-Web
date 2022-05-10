@@ -1,29 +1,49 @@
 import React, { useState } from "react";
-import { Input, Cell, Button, Checkbox, Toast } from "zarm";
+import { Input, Cell, Button, Checkbox, Toast, Loading } from "zarm";
 import { useRequest } from "ahooks";
 import request from "../../utils/axios";
 import apiConfig from "../../utils/apiConfig";
 import CustomIcon from "../../components/CustomIcon";
 import Captcha from "react-captcha-code";
 import "./module.style.less";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [captcha, setCaptcha] = useState("");
   const [optionType, setOptionType] = useState("login");
+  const [checked, setChecked] = useState(false);
+  let navigate = useNavigate();
 
-  const login = () =>
-    request.post(apiConfig.login, {
+  const login = () => {
+    if (!username || !password) {
+      Toast.show("请正确填写用户名和密码！");
+      return Promise.reject("error");
+    }
+    if (!checked) {
+      Toast.show("请阅读并同意条款！");
+      return Promise.reject("error");
+    }
+    const url = optionType === "login" ? apiConfig.login : apiConfig.register;
+    return request.post(url, {
       username,
       password,
     });
+  };
 
   const { loading, run } = useRequest(login, {
     manual: true,
     onSuccess: (result, params) => {
-      const { data } = result;
-      localStorage.setItem("token", data.token);
+      const { data,msg } = result;
+      if (optionType === "login") {
+        localStorage.setItem("token", data.token);
+        Toast.show("登陆成功");
+        navigate("/");
+      } else if (optionType === "register") {
+        Toast.show(msg);
+        setOptionType('login')
+      }
     },
     onError: (error) => {
       const { data } = error;
@@ -82,7 +102,11 @@ const Login = () => {
           ) : null}
           <Cell>
             <div className="checkbox-ill">
-              <Checkbox id="agreement" />
+              <Checkbox
+                id="agreement"
+                checked={checked}
+                onChange={(e) => setChecked(e.target.checked)}
+              />
               <span htmlFor="agreement" className="agreement-span">
                 阅读并同意《我说啥是啥条款》
               </span>
