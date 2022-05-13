@@ -8,7 +8,7 @@ const Home = (props) => {
     <div className="home-content">
       <Header />
       <NavBar />
-      {/* <CostList /> */}
+      <CostList />
     </div>
   );
 };
