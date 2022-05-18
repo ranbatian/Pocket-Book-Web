@@ -11,6 +11,7 @@ const BillItem = ({ bills, date }) => {
   const [expense, setExpense] = useState(0); // 支出
   const navigate = useNavigate();
 
+  // 计算月度总支出和总收入
   useEffect(() => {
     const _income = bills
       .filter((i) => i.pay_type == 2)
@@ -44,7 +45,7 @@ const BillItem = ({ bills, date }) => {
         </div>
       </div>
       {bills.map((item) => {
-        console.info(item);
+        console.log(item)
         return (
           <Cell
             className="bill-bill"
